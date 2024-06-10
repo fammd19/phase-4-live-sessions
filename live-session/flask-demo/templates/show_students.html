@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Flask demo</title>
+	</head>
+	<body>
+		<h1>Students</h1>
+		{% if students: %}
+		<ul>
+			{% for student in students: %}
+			<li>{{student}}</li>
+			{% endfor %}
+		</ul>
+		{% else: %}
+		<p>No student found</p>
+		{% endif %}
+	</body>
+</html>
