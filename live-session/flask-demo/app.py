@@ -1,7 +1,14 @@
 from flask import Flask, render_template, request, make_response, jsonify
-#import flask class
+from blueprints import main_bp, auth_bp, students_bp
 
 app = Flask(__name__)
+
+app.register_blueprint(main_bp)
+app.register_blueprint(auth_bp)
+app.register_blueprint(students_bp)
+
+if __name__ == "__main__":
+    app.run(port=4000, debug=True)
 
 # #create a route for index/ homepage
 # # q= - setting query paramater 
@@ -57,8 +64,8 @@ app = Flask(__name__)
 # # def student_name(name):
 # #     return f"The student name is {name}"   
 
-if __name__ == "__main__":
-    #debug here will auto refresh/ hot reload
-    app.run(port=4000, debug=True)
+# if __name__ == "__main__":
+#     #debug here will auto refresh/ hot reload
+#     app.run(port=4000, debug=True)
 
 
