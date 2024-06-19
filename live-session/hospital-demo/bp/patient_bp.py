@@ -37,20 +37,42 @@ def show_by_id(patient_id):
     patient = Patient.query.filter(Patient.id==patient_id).first()
 
     if patient:
-        return make_response (jsonify( {"message": "Patient found"}), 200)
+        return make_response (jsonify(patient.to_dict()), 200)
 
     else: 
         return make_response (jsonify( {"message": "Patient not found"}), 404)
 
 
-@patient_bp.route('/int:patient_id', methods=['PATCH'])
+@patient_bp.route('/<int:patient_id>', methods=['PATCH'])
 def update(patient_id):
-    pass
+    patient = Patient.query.filter(Patient.id == patient_id).first()
 
-@patient_bp.route('/int:patient_id', methods=['DELETE'])
+
+    if patient:
+
+        for attr in request.json:
+            if attr == "birthdate":
+                request.json[attr] = datetime.strptime(request.json[attr],'%Y-%m-%d')
+
+            setattr(patient, attr, request.json[attr])
+
+        db.session.commit()
+
+        return make_response(jsonify(patient.to_dict()), 200)
+
+    return make_response(jsonify({"error": "No patient found"}), 404)
+
+@patient_bp.route('/<int:patient_id>', methods=['DELETE'])
 def delete (patient_id):
-    pass
+    patient = Patient.query.filter(Patient.id == patient_id).first()
 
+    if patient:
+        db.session.delete(patient)
+        db.session.commit()
+
+        return make_response(jsonify({"message":"Succesfully deleted"}), 200)
+
+    return make_response(jsonify({"error": "No patient found"}), 404)
 
 #as patient makes appointment, create appointment route should be in patients bp
 @patient_bp.route ("/<int:patient_id>/consult-doctor", methods=["POST"])  

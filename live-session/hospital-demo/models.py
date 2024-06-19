@@ -7,13 +7,13 @@ db = SQLAlchemy()
 class Doctor (db.Model, SerializerMixin):
     __tablename__ = "doctors"
 
-    serealize_rules=('-appointments.doctor','-appointments.patient')
+    serialize_rules=('-appointments.doctor','-appointments.patient')
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     specialism = db.Column(db.String)
 
-    appointments = db.relationship("Appointment", back_populates="doctor")
+    appointments = db.relationship("Appointment", back_populates="doctor", cascade="all, delete-orphan")
     patients=association_proxy("appointments", "patient", creator=lambda p: Appointment(patient=p) )
 
 
@@ -30,13 +30,13 @@ class Doctor (db.Model, SerializerMixin):
 class Patient (db.Model, SerializerMixin):
     __tablename__ = "patients"
 
-    serealize_rules=('appointments.complaint',)
+    serialize_rules=('appointments.complaint',)
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
-    birthdate = db.Column(db.Date, nullable=False) #YYYY-MM-DD
+    birthdate = db.Column(db.Date) #YYYY-MM-DD
 
-    appointments = db.relationship("Appointment", back_populates="patient")
+    appointments = db.relationship("Appointment", back_populates="patient", cascade="all, delete-orphan")
     doctors=association_proxy("appointments", "doctor",creator=lambda d: Appointment(doctor=d) )
 
     # def to_json(self):
@@ -54,7 +54,7 @@ class Appointment(db.Model, SerializerMixin):
 
     __tablename__ = "appointments"
 
-    serealize_rules=('-doctor.appointments','-patient.appointments')
+    serialize_rules=('-doctor.appointments','-patient.appointments')
 
     id = db.Column(db.Integer, primary_key=True)
     complaint = db.Column(db.String)
