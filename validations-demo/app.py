@@ -23,12 +23,24 @@ class Users(Resource):
         users = [ user.to_dict() for user in User.query.all() ]
         return make_response(users, 200)
 
-    def post(self):
-        new_user = User(username=request.json.get('username'), location=request.json.get('location'), email=request.json.get('email'), age=request.json.get('age'))
-        db.session.add(new_user)
-        db.session.commit()
+    # def post(self):
+    #     new_user = User(username=request.json.get('username'), location=request.json.get('location'), email=request.json.get('email'), age=request.json.get('age'))
+    #     db.session.add(new_user)
+    #     db.session.commit()
 
-        return make_response(new_user.to_dict(), 201)
+    #     return make_response(new_user.to_dict(), 201)
+
+    def post(self):
+        try:
+            new_user = User(username=request.json.get('username'), location=request.json.get('location'), email=request.json.get('email'), age=request.json.get('age'))
+            db.session.add(new_user)
+            db.session.commit()
+
+            return make_response(new_user.to_dict(), 201)
+        
+        except ValueError as e:
+            db.session.rollback()
+            return make_response({"error": str(e)}, 400)
 
 class UserByID(Resource):
     def get(self, id):
